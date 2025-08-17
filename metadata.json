@@ -1,0 +1,5 @@
+{
+  "name": "Builders.TX",
+  "description": "An application to manage construction and permitting processes for multiple properties, featuring dark mode, task tracking, and an AI-powered assistant.",
+  "requestFramePermissions": []
+}

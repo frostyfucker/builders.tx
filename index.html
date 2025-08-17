@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Builders.TX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'brand-primary': '#1e3a8a',
+              'brand-secondary': '#3b82f6',
+              'brand-accent': '#10b981',
+              'brand-light': '#eff6ff',
+              'status-completed': '#10b981',
+              'status-inprogress': '#3b82f6',
+              'status-blocked': '#ef4444',
+              'status-notstarted': '#6b7280',
+            },
+          },
+        },
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.1.1/",
+    "react/": "https://esm.sh/react@^19.1.1/",
+    "react": "https://esm.sh/react@^19.1.1",
+    "recharts": "https://esm.sh/recharts@^3.1.2",
+    "@google/genai": "https://esm.sh/@google/genai@^1.13.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-300">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
