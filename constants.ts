@@ -1,7 +1,7 @@
 import { Property, TaskStatus, Person } from './types';
 
 const people: Person[] = [
-  { id: 'person-roy', name: 'Roy Hodge Jr.', role: 'Project Manager', phone: '(930) 280-7805', email: 'roy.hodge@builders.tx', avatarUrl: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAHgAeADAREAAhEBAxEB/8QAGwAAAgMBAQEAAAAAAAAAAAAAAgMAAQQFBgf/xAA5EAACAQMDAwIFAgQFBAMBAAAAAQIDBBESITEFQVEGEyJhcYEHkaGxMkLB0RQjUmLR4fAVFjOCkv/EABoBAQEBAQEBAQAAAAAAAAAAAAABAgMEBQb/xAAxEQEBAAEDAgQDBwUBAAAAAAAAAQIRAxIhMQRBURMyYXGBkaGx0fAUIkLB4ULxI//' },
+  { id: 'person-roy', name: 'Roy Hodge Jr.', role: 'Project Manager', phone: '(930) 280-7805', email: 'roy.hodge@builders.tx', avatarUrl: 'https://github.com/frostyfucker/Resume/blob/main/486383399_1887378762072833_5696250165872260052_n.jpg?raw=true' },
   { id: 'person-dane', name: 'Dane Walter', role: 'Lead Contractor', phone: '555-333-4444', email: 'dane.walter@builders.tx', avatarUrl: 'https://i.pravatar.cc/40?u=dane.walter@builders.tx' },
 ];
 
