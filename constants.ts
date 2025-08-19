@@ -13,7 +13,7 @@ export const INITIAL_PROPERTIES: Property[] = [
   {
     id: 1,
     address: "945 Potomac St, San Antonio, TX 78202",
-    imageUrl: "https://images.unsplash.com/photo-1580587771525-78d9dba3b914?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    imageUrl: "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=CW9f25koQJpdDUitCuUbPg&cb_client=search.gws-prod.gps&w=800&h=400&yaw=346.67825&pitch=0&thumbfov=100",
     permitting: {
       tasks: [
         { id: 'p1-1', name: "Home Addition Permit", status: TaskStatus.InProgress, personId: 'person-jaime', date: '2025-07-23', dateLabel: 'Applied', notes: 'Record: RES-ADD-PMT25-32501044. Rewire existing residence with addition and new 200 amp meter loop.' },
@@ -46,7 +46,7 @@ export const INITIAL_PROPERTIES: Property[] = [
   {
     id: 2,
     address: "2207 Burnet St, Houston, TX 77009",
-    imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2670&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    imageUrl: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=800&h=400&auto=format&fit=crop",
     permitting: {
       tasks: [
         { id: 'p2-1', name: "Residential Remodel Permit", status: TaskStatus.Completed, personId: 'person-roy', attachments: [] },
@@ -69,7 +69,7 @@ export const INITIAL_PROPERTIES: Property[] = [
   {
     id: 3,
     address: "1343 Mckinley St, Houston, TX 77002",
-    imageUrl: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&h=400&auto=format&fit=crop",
     permitting: {
       tasks: [
         { id: 'p3-1', name: "Residential Remodel Permit", status: TaskStatus.Completed, personId: 'person-roy', attachments: [] },
@@ -92,7 +92,7 @@ export const INITIAL_PROPERTIES: Property[] = [
   {
     id: 4,
     address: "110 Nellina Dr, Houston, TX 77061",
-    imageUrl: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    imageUrl: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?q=80&w=800&h=400&auto=format&fit=crop",
     permitting: {
       tasks: [
         { id: 'p4-1', name: "Residential Remodel Permit", status: TaskStatus.Completed, personId: 'person-roy', attachments: [] },
@@ -118,7 +118,7 @@ export const INITIAL_PROPERTIES: Property[] = [
   {
     id: 5,
     address: "628 Fleming Dr, Houston, TX 77012",
-    imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    imageUrl: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=800&h=400&auto=format&fit=crop",
     permitting: {
       tasks: [
         { id: 'p5-1', name: "Residential Remodel Permit", status: TaskStatus.Completed, personId: 'person-roy', attachments: [] },
