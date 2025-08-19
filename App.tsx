@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { INITIAL_PROPERTIES } from './constants';
-import { Property, TaskStatus, ProcessType, Task, Person, Attachment, LogEntry } from './types';
+import { Property, TaskStatus, ProcessType, Task, Person, Attachment, LogEntry, PermitDetail } from './types';
 import AIAssistant from './components/AIAssistant';
 
 // --- Icon Components ---
@@ -38,7 +38,7 @@ const WrenchScrewdriverIcon: React.FC<{ className?: string }> = ({ className }) 
 const HomeIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className || "w-6 h-6"}>
     <path d="M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z" />
-    <path d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z" />
+    <path d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75-.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z" />
   </svg>
 );
 
@@ -175,12 +175,14 @@ interface TaskItemProps {
     task: Task;
     person?: Person;
     onStatusChange: (newStatus: TaskStatus) => void;
-    onEdit: () => void;
+    onEdit: (task: Task) => void;
+    onShowDetails: (task: Task) => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, person, onStatusChange, onEdit }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, person, onStatusChange, onEdit, onShowDetails }) => {
     const { icon: Icon, color } = statusConfig[task.status];
     const [isOpen, setIsOpen] = useState(false);
+    const hasDetails = !!task.permitDetails;
 
     const handleSelect = (status: TaskStatus) => {
         onStatusChange(status);
@@ -192,7 +194,14 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, person, onStatusChange, onEdi
             <div className="flex flex-col items-start gap-1 flex-grow overflow-hidden">
                  <div className="flex items-center gap-3">
                     <Icon className={`w-5 h-5 ${color}`} />
-                    <span className="text-slate-700 dark:text-slate-300">{task.name}</span>
+                    <button
+                        onClick={hasDetails ? () => onShowDetails(task) : undefined}
+                        disabled={!hasDetails}
+                        className={`text-left text-slate-700 dark:text-slate-300 ${hasDetails ? 'hover:underline cursor-pointer' : 'cursor-default'}`}
+                        aria-label={hasDetails ? `View details for ${task.name}` : task.name}
+                    >
+                        {task.name}
+                    </button>
                 </div>
                 {task.notes && <p className="text-xs text-slate-500 dark:text-slate-400 ml-8 italic">Note: {task.notes}</p>}
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 ml-8">
@@ -234,9 +243,14 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, person, onStatusChange, onEdi
                     </div>
                 )}
             </div>
-            <div className="flex items-center gap-2 ml-4">
+            <div className="flex items-center gap-1 ml-4">
                 {person && <PersonAvatar person={person} />}
-                 <button onClick={onEdit} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" aria-label="Edit task">
+                {hasDetails && (
+                    <button onClick={() => onShowDetails(task)} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" aria-label="View permit details">
+                        <InformationCircleIcon className="w-4 h-4" />
+                    </button>
+                )}
+                 <button onClick={() => onEdit(task)} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" aria-label="Edit task">
                     <PencilIcon className="w-4 h-4" />
                 </button>
                 <div className="relative">
@@ -274,9 +288,10 @@ interface TaskListProps {
     onTaskStatusChange: (taskId: string, newStatus: TaskStatus) => void;
     onEditTask: (task: Task) => void;
     onAddTask: () => void;
+    onShowTaskDetails: (task: Task) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ title, tasks, people, icon, onTaskStatusChange, onEditTask, onAddTask }) => (
+const TaskList: React.FC<TaskListProps> = ({ title, tasks, people, icon, onTaskStatusChange, onEditTask, onAddTask, onShowTaskDetails }) => (
     <div className="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-xl transition-colors">
         <div className="flex items-center gap-2 mb-4">
             {icon}
@@ -291,7 +306,8 @@ const TaskList: React.FC<TaskListProps> = ({ title, tasks, people, icon, onTaskS
                         task={task} 
                         person={person}
                         onStatusChange={(newStatus) => onTaskStatusChange(task.id, newStatus)}
-                        onEdit={() => onEditTask(task)}
+                        onEdit={onEditTask}
+                        onShowDetails={onShowTaskDetails}
                     />
                 );
             }) : (
@@ -478,13 +494,13 @@ interface PropertyDetailProps {
     onAddressChange: (propertyId: number, newAddress: string) => void;
     onOpenTaskModal: (propertyId: number, processType: ProcessType, task?: Task) => void;
     onAddComment: (propertyId: number, commentText: string, attachments: Attachment[]) => void;
+    onShowTaskDetails: (task: Task) => void;
 }
 
-const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, onBack, onTaskStatusChange, onImageChange, onAddressChange, onOpenTaskModal, onAddComment }) => {
+const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, onBack, onTaskStatusChange, onImageChange, onAddressChange, onOpenTaskModal, onAddComment, onShowTaskDetails }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isEditingAddress, setIsEditingAddress] = useState(false);
     const [address, setAddress] = useState(property.address);
-    const [activeTab, setActiveTab] = useState<'tasks' | 'log'>('tasks');
     const [showCompleted, setShowCompleted] = useState(true);
     const addressInputRef = useRef<HTMLInputElement>(null);
 
@@ -601,21 +617,10 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, onBack, onTas
                     </button>
                 </div>
             </div>
-            
-            <div className="mb-6 border-b border-slate-200 dark:border-slate-700">
-                <nav className="-mb-px flex space-x-6" aria-label="Tabs">
-                    <button onClick={() => setActiveTab('tasks')} className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${activeTab === 'tasks' ? 'border-brand-secondary text-brand-secondary' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:border-slate-600'}`}>
-                         <WrenchScrewdriverIcon className="w-5 h-5" /> Tasks
-                    </button>
-                    <button onClick={() => setActiveTab('log')} className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${activeTab === 'log' ? 'border-brand-secondary text-brand-secondary' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:border-slate-600'}`}>
-                         <ChatBubbleLeftRightIcon className="w-5 h-5" /> Activity Log
-                    </button>
-                </nav>
-            </div>
 
-            {activeTab === 'tasks' ? (
-                 <div className="animate-fade-in-fast">
-                    <div className="flex justify-end mb-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
+                     <div className="flex justify-end">
                         <label htmlFor="show-completed" className="flex items-center cursor-pointer">
                             <span className="text-sm font-medium text-slate-600 dark:text-slate-300 mr-3">Show Completed</span>
                             <div className="relative">
@@ -624,36 +629,35 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, onBack, onTas
                             </div>
                         </label>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <TaskList
-                            title="Permitting Process"
-                            icon={<DocumentTextIcon className="w-6 h-6 text-brand-secondary" />}
-                            tasks={permittingTasks}
-                            people={property.people}
-                            onTaskStatusChange={(taskId, newStatus) => onTaskStatusChange(property.id, ProcessType.Permitting, taskId, newStatus)}
-                            onEditTask={(task) => onOpenTaskModal(property.id, ProcessType.Permitting, task)}
-                            onAddTask={() => onOpenTaskModal(property.id, ProcessType.Permitting)}
-                        />
-                        <TaskList
-                            title="Construction Phases"
-                            icon={<WrenchScrewdriverIcon className="w-6 h-6 text-brand-secondary" />}
-                            tasks={constructionTasks}
-                            people={property.people}
-                            onTaskStatusChange={(taskId, newStatus) => onTaskStatusChange(property.id, ProcessType.Construction, taskId, newStatus)}
-                            onEditTask={(task) => onOpenTaskModal(property.id, ProcessType.Construction, task)}
-                            onAddTask={() => onOpenTaskModal(property.id, ProcessType.Construction)}
-                        />
-                    </div>
+                    <TaskList
+                        title="Permitting Process"
+                        icon={<DocumentTextIcon className="w-6 h-6 text-brand-secondary" />}
+                        tasks={permittingTasks}
+                        people={property.people}
+                        onTaskStatusChange={(taskId, newStatus) => onTaskStatusChange(property.id, ProcessType.Permitting, taskId, newStatus)}
+                        onEditTask={(task) => onOpenTaskModal(property.id, ProcessType.Permitting, task)}
+                        onAddTask={() => onOpenTaskModal(property.id, ProcessType.Permitting)}
+                        onShowTaskDetails={onShowTaskDetails}
+                    />
+                    <TaskList
+                        title="Construction Phases"
+                        icon={<WrenchScrewdriverIcon className="w-6 h-6 text-brand-secondary" />}
+                        tasks={constructionTasks}
+                        people={property.people}
+                        onTaskStatusChange={(taskId, newStatus) => onTaskStatusChange(property.id, ProcessType.Construction, taskId, newStatus)}
+                        onEditTask={(task) => onOpenTaskModal(property.id, ProcessType.Construction, task)}
+                        onAddTask={() => onOpenTaskModal(property.id, ProcessType.Construction)}
+                        onShowTaskDetails={onShowTaskDetails}
+                    />
                 </div>
-            ) : (
-                <div className="animate-fade-in-fast">
-                    <ActivityLog 
+                 <div className="lg:col-span-1">
+                     <ActivityLog 
                         log={property.activityLog} 
                         people={property.people}
                         onAddComment={(comment, attachments) => onAddComment(property.id, comment, attachments)}
                     />
                 </div>
-            )}
+            </div>
         </div>
     );
 };
@@ -1125,6 +1129,84 @@ const PersonEditModal: React.FC<PersonEditModalProps> = ({ person, onClose, onSa
     );
 };
 
+interface PermitDetailModalProps {
+    task: Task;
+    onClose: () => void;
+}
+
+const PermitDetailModal: React.FC<PermitDetailModalProps> = ({ task, onClose }) => {
+    if (!task.permitDetails) return null;
+    const { permitDetails: details } = task;
+
+    const DetailSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+        <div>
+            <h3 className="text-md font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-600 pb-2 mb-3">{title}</h3>
+            {children}
+        </div>
+    );
+
+    const InfoPair: React.FC<{ label: string; value?: string | number }> = ({ label, value }) => (
+        value ? <p className="text-sm"><span className="font-semibold text-slate-600 dark:text-slate-400">{label}: </span>{value}</p> : null
+    );
+    
+    const ContactBlock: React.FC<{ title: string; person: {name: string; company?: string; phone: string; email?: string; address: string; licenseInfo?: string;} }> = ({title, person}) => (
+        <div>
+            <h4 className="font-bold text-slate-700 dark:text-slate-300">{title}</h4>
+            <p className="text-sm">{person.name}{person.company && `, ${person.company}`}</p>
+            <p className="text-sm">{person.address}</p>
+            {person.phone && <p className="text-sm">Phone: {person.phone}</p>}
+            {person.email && <p className="text-sm">Email: {person.email}</p>}
+            {person.licenseInfo && <p className="text-sm">License: {person.licenseInfo}</p>}
+        </div>
+    );
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 animate-fade-in-fast" onClick={onClose}>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-3xl m-4" onClick={e => e.stopPropagation()}>
+                <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{task.name} - Details</h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Record: {details.recordNumber} | Status: <span className="font-semibold">{details.recordStatus}</span></p>
+                </div>
+                <div className="p-6 max-h-[70vh] overflow-y-auto space-y-4">
+                    <DetailSection title="Project & Scope">
+                        <InfoPair label="Project Description" value={details.projectDescription} />
+                        <p className="text-sm mt-2"><span className="font-semibold text-slate-600 dark:text-slate-400">Scope of Work: </span>{details.scopeOfWork}</p>
+                    </DetailSection>
+
+                    <DetailSection title="Key Contacts">
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             <ContactBlock title="Owner" person={{name: details.owner.name, address: details.owner.address, phone: ''}} />
+                             <ContactBlock title="Applicant" person={{name: details.applicant.name, address: details.applicant.mailingAddress, phone: details.applicant.phone, email: details.applicant.email}} />
+                             <ContactBlock title="Licensed Professional" person={details.licensedProfessional} />
+                         </div>
+                    </DetailSection>
+                    
+                     <DetailSection title="Application Information">
+                        <InfoPair label="Addition Square Footage" value={details.applicationInfo.additionSqFt} />
+                        <InfoPair label="Deck Square Footage" value={details.applicationInfo.deckSqFt} />
+                        <InfoPair label="Trades Involved" value={details.applicationInfo.trades.join(', ')} />
+                    </DetailSection>
+
+                    <DetailSection title="GIS Information">
+                        <InfoPair label="Parcel Number" value={details.gisInfo.parcelNumber} />
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1 mt-2">
+                        {details.gisInfo.jurisdictions.map(i => <InfoPair key={i.type} label={i.type} value={i.value} />)}
+                        {details.gisInfo.landDevelopment.map(i => <InfoPair key={i.type} label={i.type} value={i.value} />)}
+                        {details.gisInfo.waterAreas.map(i => <InfoPair key={i.type} label={i.type} value={i.value} />)}
+                        {details.gisInfo.zoningBase.map(i => <InfoPair key={i.baseZone} label="Base Zone" value={`${i.baseZone} (Case: ${i.caseNumber})`} />)}
+                        {details.gisInfo.zoningOverlay.map(i => <InfoPair key={i.type} label={i.type} value={i.value} />)}
+                        </div>
+                    </DetailSection>
+
+                </div>
+                 <div className="flex justify-end p-4 bg-slate-50 dark:bg-slate-800/50 rounded-b-2xl border-t border-slate-200 dark:border-slate-700">
+                    <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-white bg-brand-secondary hover:bg-brand-primary rounded-md">Close</button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 // --- Main App Component ---
 const App: React.FC = () => {
@@ -1134,6 +1216,7 @@ const App: React.FC = () => {
     const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('theme') as 'light' | 'dark') || 'light');
     const [editingTaskInfo, setEditingTaskInfo] = useState<{ propertyId: number; processType: ProcessType; task?: Task } | null>(null);
     const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+    const [selectedTaskForDetails, setSelectedTaskForDetails] = useState<Task | null>(null);
 
 
     useEffect(() => {
@@ -1362,6 +1445,12 @@ const App: React.FC = () => {
         setSelectedPropertyId(null);
         setMainView('team');
     }
+    
+    const handleShowTaskDetails = useCallback((task: Task) => {
+        if(task.permitDetails) {
+            setSelectedTaskForDetails(task);
+        }
+    }, []);
 
     const renderMainContent = () => {
         if (selectedProperty) {
@@ -1374,6 +1463,7 @@ const App: React.FC = () => {
                     onAddressChange={handleAddressChange}
                     onOpenTaskModal={(propId, procType, task) => setEditingTaskInfo({ propertyId: propId, processType: procType, task })}
                     onAddComment={handleAddComment}
+                    onShowTaskDetails={handleShowTaskDetails}
                 />
             );
         }
@@ -1419,6 +1509,12 @@ const App: React.FC = () => {
                     person={editingPerson}
                     onClose={() => setEditingPerson(null)}
                     onSave={handleSavePerson}
+                />
+            )}
+            {selectedTaskForDetails && (
+                <PermitDetailModal
+                    task={selectedTaskForDetails}
+                    onClose={() => setSelectedTaskForDetails(null)}
                 />
             )}
             <AIAssistant />

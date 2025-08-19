@@ -16,7 +16,61 @@ export const INITIAL_PROPERTIES: Property[] = [
     imageUrl: "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=CW9f25koQJpdDUitCuUbPg&cb_client=search.gws-prod.gps&w=800&h=400&yaw=346.67825&pitch=0&thumbfov=100",
     permitting: {
       tasks: [
-        { id: 'p1-1', name: "Home Addition Permit", status: TaskStatus.InProgress, personId: 'person-jaime', date: '2025-07-23', dateLabel: 'Applied', notes: 'Record: RES-ADD-PMT25-32501044. Rewire existing residence with addition and new 200 amp meter loop.' },
+        { 
+          id: 'p1-1', 
+          name: "Home Addition Permit", 
+          status: TaskStatus.InProgress, 
+          personId: 'person-jaime', 
+          date: '2025-07-23', 
+          dateLabel: 'Applied', 
+          notes: 'Record: RES-ADD-PMT25-32501044. Rewire existing residence with addition and new 200 amp meter loop.',
+          permitDetails: {
+            recordNumber: 'RES-ADD-PMT25-32501044',
+            recordStatus: 'Active',
+            applicant: {
+              name: 'JAIME VEGA',
+              phone: '210-400-0805',
+              email: 'eagleconstruction2326@gmail.com',
+              mailingAddress: '130 COTTONWOOD, SAN ANTONIO, TX, 78214',
+            },
+            licensedProfessional: {
+              name: 'JAIME VEGA',
+              company: 'EAGLE CONSTRUCTION',
+              address: '130 COTTONWOOD, SAN ANTONIO, TX, 78214',
+              phone: '210-400-0805',
+              licenseInfo: 'City Residential Building Cntr H928261',
+            },
+            owner: {
+              name: 'NEXUS SERIES B LLC',
+              address: '1008 SPENCE ST, AUSTIN, TX, 78702',
+            },
+            projectDescription: '945 POTOMAC ST',
+            scopeOfWork: 'ADDITION TO REAR OF THE HOUSE WITH MASTER BATHROOM AND CLOSET "New 241 sq. ft. one story room addition, attached to Rear of existing residence on new foundation. Must Comply with setbacks. Must comply with UDC and IRC. Building over easements no permitted. Homeowner/Contractor are aware of inspections required. Homeowner/Contractor has been notified that an engineers letter is required to clear foundation inspection. **Any Electrical, Mechanical, or Plumbing work will require a separate, additional permit by a State Licensed Contractor, complete with inspections. ***All permits EXPIRE after 180 days with no activity.***',
+            applicationInfo: {
+              deckSqFt: 126,
+              additionSqFt: 241,
+              trades: ['Electrical', 'Mechanical', 'Plumbing'],
+            },
+            gisInfo: {
+              parcelNumber: '129205',
+              jurisdictions: [
+                { type: 'San Antonio City Limits', value: 'City of San Antonio' },
+                { type: 'Council District', value: '2' },
+              ],
+              landDevelopment: [
+                { type: 'Military Notification Area', value: 'Fort Sam Houston MNA' },
+                { type: 'Neighborhood Association(s)', value: 'Jefferson Heights - 64' },
+                { type: 'School District', value: 'San Antonio ISD' },
+              ],
+              waterAreas: [{ type: 'Watershed', value: 'Salado Creek' }],
+              zoningBase: [{ baseZone: 'R-4', caseNumber: '20020139' }],
+              zoningOverlay: [
+                { type: 'Airport Hazard Overlay District (AHOD)', value: 'AHOD' },
+                { type: 'Facility Parking/Traffic Control Districts (EP)', value: 'EP-1' },
+              ],
+            }
+          }
+        },
         { id: 'p1-2', name: "Deck Permit", status: TaskStatus.InProgress, personId: 'person-jaime', date: '2025-07-23', dateLabel: 'Applied', notes: 'Record: RES-DCK-PMT25-32401044.' },
         { id: 'p1-3', name: "Electrical TOPS Permit", status: TaskStatus.InProgress, personId: 'person-dcanales', date: '2025-07-14', dateLabel: 'Applied', notes: 'Record: MEP-TOP-PMT25-33619871. Rewire w meterloop.' },
         { id: 'p1-4', name: "Residential Repair Permit", status: TaskStatus.Completed, personId: 'person-dcanales', date: '2025-07-14', dateLabel: 'Issued', notes: 'Record: REP-RRP-PMT-25-35302256.' },

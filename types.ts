@@ -17,6 +17,29 @@ export interface Attachment {
   type: 'image' | 'document';
 }
 
+export interface PermitDetail {
+  recordNumber: string;
+  recordStatus: string;
+  applicant: { name: string; phone: string; email: string; mailingAddress: string; };
+  licensedProfessional: { name: string; company: string; address: string; phone: string; licenseInfo: string; };
+  owner: { name: string; address: string; };
+  projectDescription: string;
+  scopeOfWork: string;
+  applicationInfo: {
+    deckSqFt: number;
+    additionSqFt: number;
+    trades: string[];
+  };
+  gisInfo: {
+    parcelNumber: string;
+    jurisdictions: { type: string; value: string }[];
+    landDevelopment: { type: string; value: string }[];
+    waterAreas: { type: string; value: string }[];
+    zoningBase: { baseZone: string; caseNumber: string; }[];
+    zoningOverlay: { type: string; value: string }[];
+  }
+}
+
 export interface Task {
   id: string;
   name: string;
@@ -30,6 +53,7 @@ export interface Task {
     paid: boolean;
   };
   attachments?: Attachment[];
+  permitDetails?: PermitDetail;
 }
 
 export interface Process {
