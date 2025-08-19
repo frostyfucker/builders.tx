@@ -23,7 +23,8 @@ export interface Task {
   status: TaskStatus;
   notes?: string;
   personId?: string;
-  dueDate?: string;
+  date?: string;
+  dateLabel?: string;
   fee?: {
     amount: number;
     paid: boolean;

@@ -106,7 +106,7 @@ const PlusCircleIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 const TrashIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-6 h-6"}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.134-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.067-2.09 1.02-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 4.811 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.134-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.067-2.09 1.02-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
     </svg>
 );
 
@@ -196,10 +196,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, person, onStatusChange, onEdi
                 </div>
                 {task.notes && <p className="text-xs text-slate-500 dark:text-slate-400 ml-8 italic">Note: {task.notes}</p>}
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 ml-8">
-                    {task.dueDate && (
+                    {task.date && (
                         <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                             <CalendarDaysIcon className="w-4 h-4" />
-                            <span>{new Date(task.dueDate).toLocaleDateString()}</span>
+                            <span>
+                                {task.dateLabel && <span className="font-medium">{task.dateLabel}: </span>}
+                                {new Date(task.date).toLocaleDateString()}
+                            </span>
                         </div>
                     )}
                     {task.fee && (
@@ -280,7 +283,7 @@ const TaskList: React.FC<TaskListProps> = ({ title, tasks, people, icon, onTaskS
             <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{title}</h3>
         </div>
         <div>
-            {tasks.map(task => {
+            {tasks.length > 0 ? tasks.map(task => {
                 const person = task.personId ? people.find(p => p.id === task.personId) : undefined;
                 return (
                     <TaskItem 
@@ -291,7 +294,11 @@ const TaskList: React.FC<TaskListProps> = ({ title, tasks, people, icon, onTaskS
                         onEdit={() => onEditTask(task)}
                     />
                 );
-            })}
+            }) : (
+                <div className="text-center py-4 text-sm text-slate-500 dark:text-slate-400">
+                    No active tasks.
+                </div>
+            )}
              <button
                 onClick={onAddTask}
                 className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-200/50 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
@@ -478,6 +485,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, onBack, onTas
     const [isEditingAddress, setIsEditingAddress] = useState(false);
     const [address, setAddress] = useState(property.address);
     const [activeTab, setActiveTab] = useState<'tasks' | 'log'>('tasks');
+    const [showCompleted, setShowCompleted] = useState(true);
     const addressInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -526,6 +534,16 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, onBack, onTas
         }
         setIsEditingAddress(false);
     };
+
+    const permittingTasks = useMemo(() => 
+        showCompleted ? property.permitting.tasks : property.permitting.tasks.filter(t => t.status !== TaskStatus.Completed),
+        [property.permitting.tasks, showCompleted]
+    );
+
+    const constructionTasks = useMemo(() =>
+        showCompleted ? property.construction.tasks : property.construction.tasks.filter(t => t.status !== TaskStatus.Completed),
+        [property.construction.tasks, showCompleted]
+    );
 
     return (
         <div className="animate-fade-in">
@@ -596,25 +614,36 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, onBack, onTas
             </div>
 
             {activeTab === 'tasks' ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-fast">
-                    <TaskList
-                        title="Permitting Process"
-                        icon={<DocumentTextIcon className="w-6 h-6 text-brand-secondary" />}
-                        tasks={property.permitting.tasks}
-                        people={property.people}
-                        onTaskStatusChange={(taskId, newStatus) => onTaskStatusChange(property.id, ProcessType.Permitting, taskId, newStatus)}
-                        onEditTask={(task) => onOpenTaskModal(property.id, ProcessType.Permitting, task)}
-                        onAddTask={() => onOpenTaskModal(property.id, ProcessType.Permitting)}
-                    />
-                    <TaskList
-                        title="Construction Phases"
-                        icon={<WrenchScrewdriverIcon className="w-6 h-6 text-brand-secondary" />}
-                        tasks={property.construction.tasks}
-                        people={property.people}
-                        onTaskStatusChange={(taskId, newStatus) => onTaskStatusChange(property.id, ProcessType.Construction, taskId, newStatus)}
-                        onEditTask={(task) => onOpenTaskModal(property.id, ProcessType.Construction, task)}
-                        onAddTask={() => onOpenTaskModal(property.id, ProcessType.Construction)}
-                    />
+                 <div className="animate-fade-in-fast">
+                    <div className="flex justify-end mb-4">
+                        <label htmlFor="show-completed" className="flex items-center cursor-pointer">
+                            <span className="text-sm font-medium text-slate-600 dark:text-slate-300 mr-3">Show Completed</span>
+                            <div className="relative">
+                                <input type="checkbox" id="show-completed" className="sr-only peer" checked={showCompleted} onChange={() => setShowCompleted(!showCompleted)} />
+                                <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-brand-secondary"></div>
+                            </div>
+                        </label>
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <TaskList
+                            title="Permitting Process"
+                            icon={<DocumentTextIcon className="w-6 h-6 text-brand-secondary" />}
+                            tasks={permittingTasks}
+                            people={property.people}
+                            onTaskStatusChange={(taskId, newStatus) => onTaskStatusChange(property.id, ProcessType.Permitting, taskId, newStatus)}
+                            onEditTask={(task) => onOpenTaskModal(property.id, ProcessType.Permitting, task)}
+                            onAddTask={() => onOpenTaskModal(property.id, ProcessType.Permitting)}
+                        />
+                        <TaskList
+                            title="Construction Phases"
+                            icon={<WrenchScrewdriverIcon className="w-6 h-6 text-brand-secondary" />}
+                            tasks={constructionTasks}
+                            people={property.people}
+                            onTaskStatusChange={(taskId, newStatus) => onTaskStatusChange(property.id, ProcessType.Construction, taskId, newStatus)}
+                            onEditTask={(task) => onOpenTaskModal(property.id, ProcessType.Construction, task)}
+                            onAddTask={() => onOpenTaskModal(property.id, ProcessType.Construction)}
+                        />
+                    </div>
                 </div>
             ) : (
                 <div className="animate-fade-in-fast">
@@ -673,9 +702,10 @@ const Dashboard: React.FC<DashboardProps> = ({ data, theme }) => {
 
 interface TeamDirectoryProps {
     people: Person[];
+    onEditPerson: (person: Person) => void;
 }
 
-const TeamDirectory: React.FC<TeamDirectoryProps> = ({ people }) => {
+const TeamDirectory: React.FC<TeamDirectoryProps> = ({ people, onEditPerson }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredPeople = useMemo(() => {
@@ -702,7 +732,14 @@ const TeamDirectory: React.FC<TeamDirectoryProps> = ({ people }) => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredPeople.map(person => (
-                    <div key={person.id} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div key={person.id} className="relative bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <button
+                            onClick={() => onEditPerson(person)}
+                            className="absolute top-2 right-2 p-1.5 rounded-full text-slate-400 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200 transition-colors"
+                            aria-label={`Edit ${person.name}`}
+                        >
+                            <PencilIcon className="w-4 h-4" />
+                        </button>
                         <div className="flex items-center gap-4 mb-3">
                             <img src={person.avatarUrl} alt={person.name} className="w-12 h-12 rounded-full object-cover" />
                             <div>
@@ -846,7 +883,8 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({ taskInfo, people, onClose
         name: task?.name || '',
         status: task?.status || TaskStatus.NotStarted,
         personId: task?.personId || '',
-        dueDate: task?.dueDate ? task.dueDate.split('T')[0] : '',
+        date: task?.date ? task.date.split('T')[0] : '',
+        dateLabel: task?.dateLabel || '',
         notes: task?.notes || '',
         feeAmount: task?.fee?.amount || 0,
         feePaid: task?.fee?.paid || false,
@@ -859,7 +897,8 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({ taskInfo, people, onClose
             name: task?.name || '',
             status: task?.status || TaskStatus.NotStarted,
             personId: task?.personId || '',
-            dueDate: task?.dueDate ? task.dueDate.split('T')[0] : '',
+            date: task?.date ? task.date.split('T')[0] : '',
+            dateLabel: task?.dateLabel || '',
             notes: task?.notes || '',
             feeAmount: task?.fee?.amount || 0,
             feePaid: task?.fee?.paid || false,
@@ -910,7 +949,8 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({ taskInfo, people, onClose
             status: formData.status,
             personId: formData.personId || undefined,
             notes: formData.notes || undefined,
-            dueDate: formData.dueDate || undefined,
+            date: formData.date || undefined,
+            dateLabel: formData.dateLabel || undefined,
             fee: formData.feeAmount > 0 ? {
                 amount: Number(formData.feeAmount),
                 paid: formData.feePaid,
@@ -952,9 +992,15 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({ taskInfo, people, onClose
                                     </select>
                                 </div>
                             </div>
-                            <div>
-                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Due Date</label>
-                                <input type="date" name="dueDate" value={formData.dueDate} onChange={handleChange} className="w-full mt-1 px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-md focus:ring-brand-secondary focus:border-brand-secondary"/>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Date</label>
+                                    <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full mt-1 px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-md focus:ring-brand-secondary focus:border-brand-secondary"/>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Date Label</label>
+                                    <input type="text" name="dateLabel" placeholder="e.g., Due, Issued" value={formData.dateLabel} onChange={handleChange} className="w-full mt-1 px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-md focus:ring-brand-secondary focus:border-brand-secondary"/>
+                                </div>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Notes</label>
@@ -1014,6 +1060,72 @@ const TaskEditModal: React.FC<TaskEditModalProps> = ({ taskInfo, people, onClose
     );
 };
 
+interface PersonEditModalProps {
+    person: Person;
+    onClose: () => void;
+    onSave: (personData: Person) => void;
+}
+
+const PersonEditModal: React.FC<PersonEditModalProps> = ({ person, onClose, onSave }) => {
+    const [formData, setFormData] = useState<Person>(person);
+
+    useEffect(() => {
+        setFormData(person);
+    }, [person]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSave(formData);
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 animate-fade-in-fast" onClick={onClose}>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg m-4" onClick={e => e.stopPropagation()}>
+                <form onSubmit={handleSubmit}>
+                    <div className="p-6 max-h-[80vh] overflow-y-auto">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4">Edit Contact Info</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Full Name</label>
+                                <input type="text" name="name" value={formData.name} onChange={handleChange} required className="w-full mt-1 px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-md focus:ring-brand-secondary focus:border-brand-secondary"/>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Role</label>
+                                <input type="text" name="role" value={formData.role} onChange={handleChange} required className="w-full mt-1 px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-md focus:ring-brand-secondary focus:border-brand-secondary"/>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Phone</label>
+                                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full mt-1 px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-md focus:ring-brand-secondary focus:border-brand-secondary"/>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+                                    <input type="email" name="email" value={formData.email} onChange={handleChange} required className="w-full mt-1 px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-md focus:ring-brand-secondary focus:border-brand-secondary"/>
+                                </div>
+                            </div>
+                             <div>
+                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Avatar URL</label>
+                                <input type="text" name="avatarUrl" value={formData.avatarUrl} onChange={handleChange} className="w-full mt-1 px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-md focus:ring-brand-secondary focus:border-brand-secondary"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex justify-end items-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-b-2xl border-t border-slate-200 dark:border-slate-700">
+                        <div className="flex gap-2">
+                            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-600">Cancel</button>
+                            <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-brand-secondary hover:bg-brand-primary rounded-md">Save Changes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+
 // --- Main App Component ---
 const App: React.FC = () => {
     const [properties, setProperties] = useState<Property[]>(INITIAL_PROPERTIES);
@@ -1021,6 +1133,7 @@ const App: React.FC = () => {
     const [mainView, setMainView] = useState<'dashboard' | 'team'>('dashboard');
     const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('theme') as 'light' | 'dark') || 'light');
     const [editingTaskInfo, setEditingTaskInfo] = useState<{ propertyId: number; processType: ProcessType; task?: Task } | null>(null);
+    const [editingPerson, setEditingPerson] = useState<Person | null>(null);
 
 
     useEffect(() => {
@@ -1171,6 +1284,18 @@ const App: React.FC = () => {
         }));
         setEditingTaskInfo(null);
     }, []);
+    
+    const handleSavePerson = useCallback((updatedPerson: Person) => {
+        setProperties(prevProperties =>
+            prevProperties.map(prop => ({
+                ...prop,
+                people: prop.people.map(p =>
+                    p.id === updatedPerson.id ? updatedPerson : p
+                ),
+            }))
+        );
+        setEditingPerson(null);
+    }, []);
 
     const handleAddComment = useCallback((propertyId: number, commentText: string, attachments: Attachment[]) => {
         const newLogEntry: LogEntry = {
@@ -1253,7 +1378,7 @@ const App: React.FC = () => {
             );
         }
         if (mainView === 'team') {
-            return <TeamDirectory people={allPeople} />;
+            return <TeamDirectory people={allPeople} onEditPerson={setEditingPerson} />;
         }
         
         // Main Dashboard View
@@ -1287,6 +1412,13 @@ const App: React.FC = () => {
                     onClose={() => setEditingTaskInfo(null)}
                     onSave={handleSaveTask}
                     onDelete={handleDeleteTask}
+                />
+            )}
+            {editingPerson && (
+                <PersonEditModal
+                    person={editingPerson}
+                    onClose={() => setEditingPerson(null)}
+                    onSave={handleSavePerson}
                 />
             )}
             <AIAssistant />
