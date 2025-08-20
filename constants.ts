@@ -1,9 +1,9 @@
 import { Property, TaskStatus, Person } from './types';
 
 const people: Person[] = [
-  { id: 'person-roy', name: 'Roy Hodge Jr.', role: 'Project Manager', phone: '(930) 280-7805', email: 'roy.hodge@builders.tx', avatarUrl: 'https://github.com/frostyfucker/Resume/blob/main/486383399_1887378762072833_5696250165872260052_n.jpg?raw=true' },
-  { id: 'person-dane', name: 'Dane Walter', role: 'Lead Contractor', phone: '(713) 555-0101', email: 'dane.walter@builders.tx', avatarUrl: 'https://i.pravatar.cc/40?u=dane.walter@builders.tx' },
-  { id: 'person-jaime', name: 'Jaime Vega', role: 'City Clerk', phone: '(210) 555-0111', email: 'jaime.vega@sanantonio.gov', avatarUrl: 'https://i.pravatar.cc/40?u=jaime.vega' },
+  { id: 'person-roy', name: 'Roy Hodge Jr.', role: 'Software Engineer', phone: '(930) 280-7805', email: 'rhodge@cbbtx.org', avatarUrl: 'https://github.com/frostyfucker/Resume/blob/main/486383399_1887378762072833_5696250165872260052_n.jpg?raw=true' },
+  { id: 'person-dane', name: 'Dane Walter', role: 'Founder', phone: '(512) 757-7934', email: 'dwalter@cbbtx.org', avatarUrl: 'https://i.pravatar.cc/40?u=dane.walter@builders.tx' },
+  { id: 'person-jaime', name: 'Jaime Vega', role: 'City Clerk', phone: '210-400-0805', email: 'eagleconstruction2326@gmail.com', avatarUrl: 'https://i.pravatar.cc/40?u=jaime.vega' },
   { id: 'person-dcanales', name: 'Daniel Canales', role: 'City Clerk', phone: '(210) 555-0112', email: 'd.canales@sanantonio.gov', avatarUrl: 'https://i.pravatar.cc/40?u=d.canales' },
   { id: 'person-paez', name: 'Paez Leal Construction', role: 'Contractor', phone: '(210) 555-0120', email: 'contact@paezleal.com', avatarUrl: 'https://i.pravatar.cc/40?u=paezleal' },
   { id: 'person-raulg', name: 'Raul G. Flores', role: 'City Clerk', phone: '(210) 555-0113', email: 'raul.flores@sanantonio.gov', avatarUrl: 'https://i.pravatar.cc/40?u=raul.flores' },
