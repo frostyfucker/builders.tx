@@ -99,22 +99,33 @@ export const INITIAL_PROPERTIES: Property[] = [
   },
   {
     id: 2,
-    address: "2207 Burnet St, Houston, TX 77009",
-    imageUrl: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=800&h=400&auto=format&fit=crop",
+    address: "2207 BURNET ST, San Antonio, TX 78202",
+    imageUrl: "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=pcFZfeIu30nOiLln82ui_w&cb_client=search.gws-prod.gps&w=800&h=400&yaw=0.21&pitch=0&thumbfov=100",
     permitting: {
       tasks: [
-        { id: 'p2-1', name: "Residential Remodel Permit", status: TaskStatus.Completed, personId: 'person-roy', attachments: [] },
-        { id: 'p2-2', name: "Plumbing General", status: TaskStatus.InProgress, notes: "Stairs need to be resized, air ducts need to be installed upstairs, drywall opened up for framing, plumbing for gas line done, conduit resized for the service to the main", personId: 'person-dane', attachments: [] },
-        { id: 'p2-3', name: "Electric General", status: TaskStatus.Completed, notes: "Fees Due", personId: 'person-dane', fee: { amount: 225, paid: true }, attachments: [] },
-        { id: 'p2-4', name: "HVAC General", status: TaskStatus.InProgress, personId: 'person-dane', attachments: [] },
+        { id: 'p2-1', name: "Plumbing General Permit", status: TaskStatus.InProgress, date: '2025-07-28', dateLabel: 'Status: Active', notes: 'Record: MEP-PLM-PMT25-34321515.', personId: 'person-dane' },
+        { id: 'p2-2', name: "Plumbing Sewer Permit", status: TaskStatus.InProgress, date: '2025-07-28', dateLabel: 'Status: Active', notes: 'Record: MEP-SEW-PMT25-34821520.', personId: 'person-dane' },
+        { id: 'p2-3', name: "Plumbing Gas Permit", status: TaskStatus.InProgress, date: '2025-07-28', dateLabel: 'Status: Active', notes: 'Record: MEP-GAS-PMT25-34221522.', personId: 'person-dane' },
+        { id: 'p2-4', name: "Electrical TOPS Permit", status: TaskStatus.InProgress, date: '2025-07-14', dateLabel: 'Status: Active', notes: 'Record: MEP-TOP-PMT25-33619876.', personId: 'person-dcanales' },
+        { id: 'p2-5', name: "Electrical General Permit", status: TaskStatus.InProgress, date: '2025-06-24', dateLabel: 'Status: Active', notes: 'Record: MEP-ELE-PMT25-33317989.', personId: 'person-dcanales' },
+        { id: 'p2-6', name: "Residential Repair Permit", status: TaskStatus.InProgress, date: '2023-06-28', dateLabel: 'Status: About to Expire', notes: 'Record: REP-RRP-PMT-23-35302701.', personId: 'person-roy' },
+        { id: 'p2-7', name: "Complaint", status: TaskStatus.NotStarted, date: '2023-02-20', dateLabel: 'Status: Received', notes: 'Record: INV-COM-INV23-22700864.'},
+        { id: 'p2-8', name: "Plumbing Sewer Permit (Old)", status: TaskStatus.Completed, date: '2023-07-05', dateLabel: 'Status: Closed', notes: 'Record: MEP-SEW-PMT23-34820248. sewer', personId: 'person-dane' },
+        { id: 'p2-9', name: "Plumbing Gas Permit (Old)", status: TaskStatus.Completed, date: '2023-07-05', dateLabel: 'Status: Closed', notes: 'Record: MEP-GAS-PMT23-34220249. gas', personId: 'person-dane' },
+        { id: 'p2-10', name: "Electrical Completion Permit (Old)", status: TaskStatus.Blocked, date: '2023-07-19', dateLabel: 'Status: Withdrawn', notes: 'Record: MEP-ECP-PMT23-33221342. Refers to old permit MEP-ELE-PMT23-33307816.', personId: 'person-jaime' },
+        { id: 'p2-11', name: "Electrical General Permit (Old)", status: TaskStatus.Blocked, date: '2023-03-14', dateLabel: 'Status: Withdrawn', notes: 'Record: MEP-ELE-PMT23-33307816. Rewire existing residence. Upgrade meter loop.', personId: 'person-jaime' },
+        { id: 'p2-12', name: "Plumbing General Permit (Old)", status: TaskStatus.Blocked, date: '2023-07-05', dateLabel: 'Status: Inactive', notes: 'Record: MEP-PLM-PMT23-34320247. remodle on plbg', personId: 'person-dane' },
       ]
     },
     construction: {
       tasks: [
-        { id: 'c2-1', name: "Framing Inspection", status: TaskStatus.InProgress, personId: 'person-roy', date: '2024-09-01', dateLabel: 'Due', attachments: [] },
-        { id: 'c2-2', name: "Plumbing Final", status: TaskStatus.Blocked, personId: 'person-dane', attachments: [] },
-        { id: 'c2-3', name: "Electric Final", status: TaskStatus.Completed, personId: 'person-dane', attachments: [] },
-        { id: 'c2-4', name: "Hvac Final", status: TaskStatus.Blocked, personId: 'person-dane', date: '2024-09-10', dateLabel: 'Due', attachments: [] },
+        { id: 'c2-1', name: "General Electrical Work", status: TaskStatus.InProgress, personId: 'person-dcanales', notes: 'Permit is active.'},
+        { id: 'c2-2', name: "General Plumbing Work", status: TaskStatus.InProgress, personId: 'person-dane', notes: 'Permit is active.' },
+        { id: 'c2-3', name: "Electrical Rewire & Meter Upgrade", status: TaskStatus.Blocked, personId: 'person-jaime', notes: 'Permit withdrawn.' },
+        { id: 'c2-4', name: "Plumbing Remodel", status: TaskStatus.Blocked, personId: 'person-dane', notes: 'Permit inactive.'},
+        { id: 'c2-5', name: "Sewer Line Work", status: TaskStatus.Completed, personId: 'person-dane' },
+        { id: 'c2-6', name: "Gas Line Work", status: TaskStatus.Completed, personId: 'person-dane' },
+        { id: 'c2-7', name: "Final Inspections", status: TaskStatus.NotStarted, personId: 'person-roy' },
       ]
     },
     people: people,
@@ -171,23 +182,26 @@ export const INITIAL_PROPERTIES: Property[] = [
   },
   {
     id: 5,
-    address: "628 Fleming Dr, Houston, TX 77012",
-    imageUrl: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=800&h=400&auto=format&fit=crop",
+    address: "628 FLEMING ST, San Antonio, TX 78211",
+    imageUrl: "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=-DbLMg_N_wVCstCQqwjmzg&cb_client=search.gws-prod.gps&w=800&h=400&yaw=79.205157774667&pitch=0&thumbfov=100",
     permitting: {
       tasks: [
-        { id: 'p5-1', name: "Residential Remodel Permit", status: TaskStatus.Completed, personId: 'person-roy', attachments: [] },
-        { id: 'p5-2', name: "Minor Building Repair Application", status: TaskStatus.Completed, personId: 'person-roy', attachments: [] },
-        { id: 'p5-3', name: "Plumbing General", status: TaskStatus.Completed, personId: 'person-dane', attachments: [] },
-        { id: 'p5-4', name: "Electric General", status: TaskStatus.Completed, personId: 'person-dane', attachments: [] },
-        { id: 'p5-5', name: "HVAC General", status: TaskStatus.Completed, personId: 'person-dane', attachments: [] },
+        { id: 'p5-1', name: "Mechanical Permit", status: TaskStatus.InProgress, date: '2025-06-24', dateLabel: 'Status: Active', notes: 'Record: MEP-MEC-PMT25-33917962. Full Mechanical installation of a 3.5 Ton straight cool/electric heat.', personId: 'person-dane' },
+        { id: 'p5-2', name: "Electrical General Permit", status: TaskStatus.InProgress, date: '2025-03-25', dateLabel: 'Status: Active', notes: 'Record: MEP-ELE-PMT25-33308056. Rewire existing residence.', personId: 'person-dane' },
+        { id: 'p5-3', name: "Plumbing General Permit", status: TaskStatus.InProgress, date: '2025-03-13', dateLabel: 'Status: Active', notes: 'Record: MEP-PLM-PMT25-34306938.', personId: 'person-dane' },
+        { id: 'p5-4', name: "Residential Repair Permit", status: TaskStatus.InProgress, date: '2025-03-13', dateLabel: 'Status: Active', notes: 'Record: REP-RRP-PMT-25-35300750.', personId: 'person-roy' },
+        { id: 'p5-5', name: "Minor Building Repair Application", status: TaskStatus.InProgress, date: '2025-03-13', dateLabel: 'Status: Issued', notes: 'Record: REP-MBR-APP25-35002384.', personId: 'person-roy' },
+        { id: 'p5-6', name: "Electrical General Permit (Old)", status: TaskStatus.Blocked, date: '2023-09-06', dateLabel: 'Status: Inactive', notes: 'Record: MEP-ELE-PMT23-33328071.', personId: 'person-dane' },
+        { id: 'p5-7', name: "Foundation Repair Permit", status: TaskStatus.Blocked, date: '2023-06-07', dateLabel: 'Status: Inactive', notes: 'Record: REP-FND-PMT23-35101439.', personId: 'person-roy' },
       ]
     },
     construction: {
       tasks: [
-        { id: 'c5-1', name: "Framing Inspection", status: TaskStatus.InProgress, personId: 'person-roy', date: '2024-08-30', dateLabel: 'Due', attachments: [] },
-        { id: 'c5-2', name: "Plumbing Final", status: TaskStatus.Blocked, personId: 'person-dane', attachments: [] },
-        { id: 'c5-3', name: "Electric Final", status: TaskStatus.Blocked, personId: 'person-dane', attachments: [] },
-        { id: 'c5-4', name: "Hvac Final", status: TaskStatus.Blocked, personId: 'person-dane', attachments: [] },
+        { id: 'c5-1', name: "Electrical Rewire", status: TaskStatus.InProgress, personId: 'person-dane', notes: 'Permit MEP-ELE-PMT25-33308056 is active.' },
+        { id: 'c5-2', name: "HVAC Installation (3.5 Ton)", status: TaskStatus.InProgress, personId: 'person-dane', notes: 'Permit MEP-MEC-PMT25-33917962 is active.' },
+        { id: 'c5-3', name: "Plumbing Work", status: TaskStatus.InProgress, personId: 'person-dane', notes: 'Permit MEP-PLM-PMT25-34306938 is active.' },
+        { id: 'c5-4', name: "Foundation Repair", status: TaskStatus.Blocked, personId: 'person-roy', notes: 'Permit REP-FND-PMT23-35101439 is inactive.' },
+        { id: 'c5-5', name: "Final Inspections", status: TaskStatus.NotStarted, personId: 'person-roy' },
       ]
     },
     people: people,
