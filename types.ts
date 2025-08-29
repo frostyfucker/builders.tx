@@ -8,6 +8,7 @@ export enum TaskStatus {
 export enum ProcessType {
     Permitting = 'permitting',
     Construction = 'construction',
+    Management = 'management',
 }
 
 export interface Attachment {
@@ -46,8 +47,8 @@ export interface Task {
   status: TaskStatus;
   notes?: string;
   personId?: string;
-  date?: string;
-  dateLabel?: string;
+  startDate?: string;
+  endDate?: string;
   fee?: {
     amount: number;
     paid: boolean;
@@ -84,7 +85,7 @@ export interface Property {
   imageUrl: string;
   permitting: Process;
   construction: Process;
-  people: Person[];
+  management: Process;
   activityLog: LogEntry[];
 }
 
