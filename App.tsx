@@ -292,6 +292,8 @@ const TaskFormModal: React.FC<{ isOpen: boolean; onClose: () => void; onSave: (t
 };
 
 type DetailViewMode = 'board' | 'list' | 'timeline';
+type AppView = 'dashboard' | 'property' | 'team';
+
 
 // --- View Components ---
 
@@ -415,7 +417,7 @@ const TeamDirectory: React.FC<{ people: Person[], onBack: () => void }> = ({ peo
     return (
         <div>
             <div className="flex items-center gap-4 mb-6">
-                 <button onClick={onBack} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title="Back to Dashboard">
+                 <button onClick={onBack} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors md:hidden" title="Back to Dashboard">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
                  </button>
                  <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Team Directory</h2>
@@ -530,7 +532,53 @@ const ActivityLog: React.FC<{
     );
 };
 
-type AppView = 'dashboard' | 'property' | 'team';
+
+const SideNav: React.FC<{
+    onNavigateToDashboard: () => void;
+    onShowTeam: () => void;
+    onOpenImportModal: () => void;
+    onToggleDarkMode: () => void;
+    isDarkMode: boolean;
+    currentView: AppView;
+}> = ({ onNavigateToDashboard, onShowTeam, onOpenImportModal, onToggleDarkMode, isDarkMode, currentView }) => {
+    
+    const navItemClasses = "flex items-center w-full gap-3 px-4 py-3 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-left";
+    const activeNavItemClasses = "bg-slate-200 dark:bg-slate-700 font-semibold text-brand-primary dark:text-white";
+
+    const isDashboardActive = currentView === 'dashboard' || currentView === 'property';
+
+    return (
+        <aside className="fixed top-0 left-0 h-full w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col p-4 z-40">
+            <button onClick={onNavigateToDashboard} className="flex items-center gap-2 mb-8 text-left">
+                 <WrenchScrewdriverIcon className="w-8 h-8 text-brand-primary flex-shrink-0" />
+                 <h1 className="text-2xl font-bold text-brand-primary dark:text-brand-light">Builders.TX</h1>
+            </button>
+            <nav className="flex-1 flex flex-col gap-2">
+                <button onClick={onNavigateToDashboard} className={`${navItemClasses} ${isDashboardActive ? activeNavItemClasses : ''}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 flex-shrink-0"><path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5" /></svg>
+                    <span>Dashboard</span>
+                </button>
+                <button onClick={onShowTeam} className={`${navItemClasses} ${currentView === 'team' ? activeNavItemClasses : ''}`}>
+                    <UsersIcon className="w-6 h-6 flex-shrink-0" />
+                    <span>Team</span>
+                </button>
+                <button onClick={onOpenImportModal} className={navItemClasses}>
+                    <ArrowUpOnSquareIcon className="w-6 h-6 flex-shrink-0" />
+                    <span>Import Permits</span>
+                </button>
+            </nav>
+            <div className="mt-auto">
+                <button onClick={onToggleDarkMode} className="w-full flex items-center justify-between p-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">
+                     <span className="text-sm font-medium">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isDarkMode ? "M12 3v1m0 16v1m8.66-15.66l-.707.707M5.05 18.95l-.707.707M21 12h-1M4 12H3m15.66 8.66l-.707-.707M5.05 5.05l-.707-.707" : "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"} />
+                     </svg>
+                </button>
+            </div>
+        </aside>
+    );
+};
+
 
 // --- Main App Component ---
 
@@ -743,54 +791,11 @@ const App: React.FC = () => {
     );
   };
   
-  const header = (
-    <header className="bg-white dark:bg-slate-800/50 backdrop-blur-sm shadow-md sticky top-0 z-40 transition-colors duration-300">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <button onClick={handleReturnToDashboard} className="flex items-center">
-            <h1 className="text-2xl font-bold text-brand-primary dark:text-brand-light flex items-center gap-2">
-              <WrenchScrewdriverIcon className="w-7 h-7" /> Builders.TX
-            </h1>
-          </button>
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-4">
-                <button onClick={openGlobalImportModal} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-secondary rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-brand-secondary dark:hover:bg-blue-600 dark:focus:ring-offset-slate-900 transition-all">
-                  <ArrowUpOnSquareIcon className="w-5 h-5" />
-                  <span>Import Permits</span>
-                </button>
-                 <button onClick={handleShowTeam} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-brand-secondary bg-slate-100 rounded-lg hover:bg-slate-200 dark:text-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-secondary dark:focus:ring-offset-slate-900 transition-all">
-                    <UsersIcon className="w-5 h-5" />
-                    <span>Team</span>
-                </button>
-            </div>
-             <div className="sm:hidden flex items-center gap-2">
-                 <button onClick={openGlobalImportModal} title="Import Permits" className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">
-                    <ArrowUpOnSquareIcon className="w-6 h-6" />
-                 </button>
-                 <button onClick={handleShowTeam} title="Team Directory" className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">
-                    <UsersIcon className="w-6 h-6" />
-                 </button>
-             </div>
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-secondary dark:focus:ring-offset-slate-900"
-              aria-label="Toggle dark mode"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isDarkMode ? "M12 3v1m0 16v1m8.66-15.66l-.707.707M5.05 18.95l-.707.707M21 12h-1M4 12H3m15.66 8.66l-.707-.707M5.05 5.05l-.707-.707" : "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"} />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-
   const renderPropertyDetails = (property: Property) => (
     <div key={property.id} className="bg-white dark:bg-slate-800/50 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700/50">
       <div className="flex flex-col md:flex-row items-start justify-between mb-6 gap-4">
         <div className='flex items-center gap-4'>
-            <button onClick={handleReturnToDashboard} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title="Back to All Properties">
+            <button onClick={handleReturnToDashboard} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors md:hidden" title="Back to All Properties">
                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
             </button>
             <div>
@@ -880,7 +885,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
       <PermitImportModal
           isOpen={isGlobalImportModalOpen}
           onClose={() => setIsGlobalImportModalOpen(false)}
@@ -907,13 +912,20 @@ const App: React.FC = () => {
             people={people}
         />
       )}
-      <div className={`bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300`}>
-        {header}
-        <main className="container mx-auto p-4 sm:p-6 lg:p-8">
-          {renderCurrentView()}
-        </main>
-        {appView === 'property' && selectedProperty && <AIAssistant property={selectedProperty} people={people} />}
-      </div>
+      
+      <SideNav
+        onNavigateToDashboard={handleReturnToDashboard}
+        onShowTeam={handleShowTeam}
+        onOpenImportModal={openGlobalImportModal}
+        onToggleDarkMode={toggleDarkMode}
+        isDarkMode={isDarkMode}
+        currentView={appView}
+      />
+      <main className="ml-64 p-4 sm:p-6 lg:p-8">
+        {renderCurrentView()}
+      </main>
+
+      {appView === 'property' && selectedProperty && <AIAssistant property={selectedProperty} people={people} />}
     </div>
   );
 };
